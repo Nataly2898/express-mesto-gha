@@ -8,11 +8,22 @@
 Для этого замените разметку бейджей на следующий фрагмент, подставив вместо `${имя_пользователя}` и `${имя_репозитория}` соответствующие значения.
 
 ```
-[![Tests for sprint 13](https://github.com/${имя_пользователя}/${имя репозитория}/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/${имя_пользователя}/${имя репозитория}/actions/workflows/tests-13-sprint.yml) 
+[![Tests for sprint 13](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-13-sprint.yml) 
 
-[![Tests for sprint 14](https://github.com/${имя_пользователя}/${имя репозитория}/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/${имя_пользователя}/${имя репозитория}/actions/workflows/tests-14-sprint.yml)
+[![Tests for sprint 14](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-14-sprint.yml)
 ```
 
+# Проектная работа № 13: Express-mesto-gha
+
+## **Описание проекта:**
+
+Back End продолжение "Место" на базе html, css и JS. Проект сделан на базе фрейма Express. 
+## Технологии
+
+* JavaScript:
+* Node.js;
+* Express;
+* MongoDB.
 
 ## Директории
 
