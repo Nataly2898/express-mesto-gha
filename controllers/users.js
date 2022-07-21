@@ -6,25 +6,12 @@ module.exports.getUsers = (req, res) => {
     .then((users) => res.status(200).send({ data: users }))
     .catch((err) => res.status(500).send({ message: `Возникла ошибка ${err.message}` }));
 };
-/*
+
 // Возвращает пользователя по _id
 module.exports.getUserId = (req, res) => {
   User.findById(req.params.id)
     .then((user) => res.send({ data: user }))
     .catch((err) => res.status(404).send({ message: err }));
-};
-*/
-
-/* Возвращает пользователя по _id */
-module.exports.getUserId = (req, res) => {
-	User.findById(req.params.id)
-		.then((user) => {
-			if (!user) { res.status(404).send({ message: "Нет пользователя с таким id" }); } else res.send({ data: user });
-		})
-	/* Странно, что, если id короче 25, то ошибку обрабатывает catch. А если 25 символов, то then. */
-		.catch((err, user) => {
-			if (!user) { res.status(404).send({ message: "Нет пользователя с таким id" }); } else res.status(500).send({ message: `Возникла ошибка ${err.message}` });
-		}); /* Добавлена обработка ошибки при запросе несуществующего пользователя */
 };
 
 // Создаёт пользователя
