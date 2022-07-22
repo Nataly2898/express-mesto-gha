@@ -9,34 +9,70 @@ module.exports.getUsers = (req, res) => {
 
 // Возвращает пользователя по _id
 module.exports.getUserId = (req, res) => {
-  User.findById(req.params.id)
-    .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(404).send({ message: err }));
+  User.findById(req.params.userId)
+    .then((user) => {
+      if (user) {
+        res.status(201).send({ data: user });
+      } else {
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: `Введены некорректные данные  ${err.message}` });
+      } else {
+        res.status(500).send({ message: `Возникла ошибка ${err.message}` });
+      }
+    });
 };
 
 // Создаёт пользователя
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar })
-  .then((user) => res.send({ data: user }))
-  .catch((err) => res.status(500).send({ message: `Возникла ошибка ${err.message}` }));
+  User.create(req.body)
+    .then((user) => res.status(201).send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: `Ошибка валидации ${err.message}` });
+      } else {
+        res.status(500).send({ message: `Возникла ошибка ${err.message}` });
+      }
+    });
 };
 
 // Обновляет профиль
 module.exports.updateProfile = (req, res) => {
-  const { name, about } = req.body;
-
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-  .then((user) => res.status(201).send({ data: user }))
-  .catch((err) => res.status(400).send({ message: err }));
+  User.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
+    .then((user) => {
+      if (user) {
+        res.status(201).send({ data: user });
+      } else {
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: `Введены некорректные данные  ${err.message}` });
+      } else {
+        res.status(500).send({ message: `Возникла ошибка ${err.message}` });
+      }
+    });
 };
 
 // Обновляет аватар
 module.exports.updateAvatar = (req, res) => {
-  const { avatar } = req.body;
-
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-  .then((user) => res.send({ data: user }))
-  .catch((err) => res.status(500).send({ message: `Возникла ошибка ${err.message}` }));
+  User.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
+    .then((user) => {
+      if (user) {
+        res.status(201).send({ data: user });
+      } else {
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: `Введены некорректные данные  ${err.message}` });
+      } else {
+        res.status(500).send({ message: `Возникла ошибка ${err.message}` });
+      }
+    });
 };
