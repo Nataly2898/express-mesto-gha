@@ -31,7 +31,7 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => {
       if (card) {
         Card.deleteOne(card).then(() => {
-          res.status(201).send({ message: 'Карточка успешно удалена' });
+          res.send({ message: 'Карточка успешно удалена' });
         });
       } else {
         res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
@@ -55,7 +55,7 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (card) {
-        res.status(201).send({ data: card });
+        res.send({ data: card });
       } else {
         res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
       }
@@ -78,7 +78,7 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (card) {
-        res.status(201).send({ data: card });
+        res.send({ data: card });
       } else {
         res.status(404).send({ message: 'Запрашиваемая карточка не найдена' });
       }
