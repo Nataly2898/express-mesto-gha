@@ -1,12 +1,6 @@
-[![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-13-sprint.yml) [![Tests](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/yandex-praktikum/express-mesto-gha/actions/workflows/tests-14-sprint.yml)
+[![Tests for sprint 13](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-13-sprint.yml) [![Tests for sprint 14](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-14-sprint.yml)
 # Проектная работа № 13: Mesto фронтенд + бэкенд
 
-
-```
-[![Tests for sprint 13](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-13-sprint.yml) 
-
-[![Tests for sprint 14](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-14-sprint.yml)
-```
 ## **Описание проекта:**
 
 Back End продолжение "Место" на базе html, css и JS. Проект сделан на базе фрейма Express. 
