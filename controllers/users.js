@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const ExistingEmailError = require('../errors/ExistingEmailError');
@@ -101,7 +101,7 @@ module.exports.getUserById = (req, res, next) => {
 };
 
 // Обновление информации о пользователе
-module.exports.updateUser = (req, res, next) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
