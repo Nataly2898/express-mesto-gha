@@ -7,7 +7,9 @@ module.exports = (req, res, next) => {
 
   // убеждаемся, что он есть или начинается с Bearer
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    throw new NotAuthorizationError('Необходима авторизация.');
+    next(new NotAuthorizationError('Необходима авторизация.'));
+
+    return
   }
 
   // извлечём токен
@@ -19,7 +21,9 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, 'some-secret-key');
   } catch (err) {
     // отправим ошибку, если не получилось
-    throw new NotAuthorizationError('Необходима авторизация.');
+    next(new NotAuthorizationError('Необходима авторизация.'));
+
+    return
   }
 
   req.user = payload;

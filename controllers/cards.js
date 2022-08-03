@@ -36,7 +36,7 @@ module.exports.deleteCard = (req, res, next) => {
         throw new ForbiddenError('Нельзя удалить чужую карточку!');
       }
       Card.findByIdAndRemove(cardId)
-        .then((deletedCard) => res.status(200).send(deletedCard))
+        .then((deletedCard) => res.send(deletedCard))
         .catch(next);
     })
     .catch(next);
@@ -52,7 +52,7 @@ module.exports.likeCard = (req, res, next) => {
       if (!card) {
         return next(new NotFoundError('Карточка не найдена.'));
       }
-      return res.status(200).send(card);
+      return res.send(card);
     })
     .catch(next);
 };
