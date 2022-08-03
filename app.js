@@ -1,9 +1,13 @@
 const express = require('express');
-
 const router = express.Router();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const { celebrate, Joi } = require('celebrate');
+const { errors } = require('celebrate');
 const cors = require('cors');
+const { createUser, login } = require('./controllers/users');
+const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/NotFoundError');
 
 // Слушаем 3000 порт
 const { PORT = 3000 } = process.env;
@@ -27,19 +31,33 @@ app.use(
 
 app.use(cors());
 
-// Временное решение авторизации
-app.use((req, res, next) => {
-  req.user = {
-    _id: '62d83205cfe30588eaf8c4ea',
-  };
-  next();
-});
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  }),
+}), login);
 
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().custom(),  // Как правильно написать
+  }),
+}), createUser);
 
-app.use((req, res) => {
-  res.status(404).send({ message: 'Cтраница не найдена' });
+// Роуты, которым нужна авторизация
+app.use('/users', auth, require('./routes/users'));
+app.use('/cards', auth, require('./routes/cards'));
+
+// Обработчики ошибок
+app.use(errors()); // обработчик ошибок celebrate
+
+// Централизованный обработчик
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
 });
 
 /* eslint-disable no-console */
