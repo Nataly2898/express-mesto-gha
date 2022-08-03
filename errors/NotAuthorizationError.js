@@ -6,4 +6,4 @@ class NotAuthorizationError extends Error {
   }
 }
 
-module.exports = { NotAuthorizationError };
+module.exports = NotAuthorizationError;

@@ -1,5 +1,5 @@
 const express = require('express');
-
+const validator = require('validator')
 const router = express.Router();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -33,13 +33,29 @@ app.use(
 app.use(cors());
 
 app.post('/signin', celebrate({
-  body: Joi.object().keys({
+    body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8).max(30),
   }),
 }), login);
 
-app.post('/signup', createUser);
+const isUrl = (link) => {
+  const result = validator.isURL(link);
+  if (result) {
+    return link;
+  }
+  throw new Error('Невалидный URL');
+};
+
+app.post('/signup', celebrate({
+    body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().custom(isUrl, 'custom validation'),
+  }),
+}), createUser);
 
 // Роуты, которым нужна авторизация
 app.use('/users', auth, require('./routes/users'));

@@ -6,4 +6,4 @@ class IncorrectRequestError extends Error {
   }
 }
 
-module.exports = { IncorrectRequestError };
+module.exports = IncorrectRequestError;

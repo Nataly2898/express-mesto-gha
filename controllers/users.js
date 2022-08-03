@@ -27,7 +27,7 @@ module.exports.createUser = (req, res, next) => {
       about: req.body.about,
       avatar: req.body.avatar,
     }))
-    .then((user) => res.status(200).send({
+    .then((user) => res.send({
       name: user.name,
       about: user.about,
       avatar: user.avatar,
@@ -36,7 +36,7 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new IncorrectRequestError('Неверные данные о пользователе или неверная ссылка на аватар.'));
+        next(new IncorrectRequestError('Ошибка валидации данных'));
       }
       return next(err);
     });
