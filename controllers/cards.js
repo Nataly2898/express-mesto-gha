@@ -58,7 +58,7 @@ module.exports.likeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         throw new IncorrectRequestError('Некорректые данные карточки');
       }
-      next(err)
+      next(err);
     })
     .catch(next);
 };
@@ -78,7 +78,7 @@ module.exports.dislikeCard = (req, res, next) => {
       if (err.name === 'CastError') {
         throw new IncorrectRequestError('Некорректые данные карточки');
       }
-      next(err)
+      next(err);
     })
     .catch(next);
 };

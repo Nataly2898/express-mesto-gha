@@ -13,7 +13,7 @@ module.exports.createUser = (req, res, next) => {
   } = req.body;
 
   User.findOne({ email })
-    .then((user) => {
+    .then(() => {
       if (!email || !password) {
         throw new IncorrectRequestError('Неправильный логин или пароль.');
       }
@@ -35,9 +35,8 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'MongoServerError') {
-        next(new ExistingEmailError('Пользователь с таким email уже существует'));
-      }
-      if (err.name === 'ValidationError') {
+        throw new ExistingEmailError('Пользователь с таким email уже существует');
+      } else if (err.name === 'ValidationError') {
         throw new IncorrectRequestError('Ошибка валидации данных');
       } else next(err);
     })
@@ -61,7 +60,7 @@ module.exports.login = (req, res, next) => {
       // вернём токен
       res.send({ token });
     })
-    .catch(err => {
+    .catch(() => {
       throw new NotAuthorizationError('Неверный email или пароль.');
     })
     .catch(next);
@@ -98,7 +97,7 @@ module.exports.getUserById = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new IncorrectRequestError(StatusMessages.INVALID_ID);
+        throw new IncorrectRequestError('Некорректный айди');
       }
       next(err);
     })

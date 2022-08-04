@@ -1,4 +1,5 @@
 const express = require('express');
+const errorHandler = require('./middlewares/errorHandler');
 
 const router = express.Router();
 const bodyParser = require('body-parser');
@@ -42,13 +43,12 @@ app.use(auth);
 app.use('/users', auth, require('./routes/users'));
 app.use('/cards', auth, require('./routes/cards'));
 
-// Обработчики ошибок
-app.use(errors()); // обработчик ошибок celebrate
-
-// Централизованный обработчик
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
+
+app.use(errors()); // обработчик ошибок celebrate
+app.use(errorHandler);
 
 /* eslint-disable no-console */
 app.listen(PORT, () => {
