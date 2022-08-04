@@ -4,6 +4,7 @@ const User = require('../models/user');
 const ExistingEmailError = require('../errors/ExistingEmailError');
 const IncorrectRequestError = require('../errors/IncorrectRequestError');
 const NotFoundError = require('../errors/NotFoundError');
+const NotAuthorizationError = require('../errors/NotAuthorizationError');
 
 // Создание нового пользователя
 module.exports.createUser = (req, res, next) => {
@@ -11,16 +12,14 @@ module.exports.createUser = (req, res, next) => {
     email, password, about, avatar, name,
   } = req.body;
 
-  if (!email || !password) {
-    throw new IncorrectRequestError('Неправильный логин или пароль.');
-  }
-
-  return User.findOne({ email })
+  User.findOne({ email })
     .then((user) => {
       if (user) {
         throw new ExistingEmailError('Пользователь с таким email уже существует.');
       }
-
+      if (!email || !password) {
+        throw new IncorrectRequestError('Неправильный логин или пароль.');
+      }
       return bcrypt.hash(password, 10);
     })
     .then((hash) => User.create({
@@ -52,7 +51,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       // проверим существует ли такой email или пароль
       if (!user || !password) {
-        throw new IncorrectRequestError('Неверный email или пароль.');
+        throw new NotAuthorizationError('Неверный email или пароль.');
       }
 
       // создадим токен
@@ -97,8 +96,7 @@ module.exports.getUserById = (req, res, next) => {
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
-      }
-      return res.send(user);
+      } else res.send(user);
     })
     .catch(next);
 };
