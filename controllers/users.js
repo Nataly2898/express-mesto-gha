@@ -52,7 +52,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       // проверим существует ли такой email или пароль
       if (!user || !password) {
-        return next(new IncorrectRequestError('Неверный email или пароль.'));
+        throw new IncorrectRequestError('Неверный email или пароль.');
       }
 
       // создадим токен
@@ -96,9 +96,9 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return next(new NotFoundError('Пользователь не найден'));
+        throw new NotFoundError('Пользователь не найден');
       }
-      return res.status(200).send(user);
+      return res.send(user);
     })
     .catch(next);
 };
@@ -111,13 +111,14 @@ module.exports.updateProfile = (req, res, next) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new IncorrectRequestError('Неверный тип данных.'));
+        throw new IncorrectRequestError('Неверный тип данных.');
       }
-      return next(err);
-    });
+      next();
+    })
+    .catch(next);
 };
 
 // Обновление аватара пользователя
@@ -131,8 +132,9 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new IncorrectRequestError('Неверная ссылка'));
+        throw new IncorrectRequestError('Неверная ссылка');
       }
-      return next(err);
-    });
+      next();
+    })
+    .catch(next);
 };

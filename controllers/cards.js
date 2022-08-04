@@ -17,10 +17,11 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new IncorrectRequestError('Переданы неверные данные.'));
+        throw new IncorrectRequestError('Переданы неверные данные.');
       }
       return next(err);
-    });
+    })
+    .catch(next);
 };
 // Удаление карточки
 module.exports.deleteCard = (req, res, next) => {
