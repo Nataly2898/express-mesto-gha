@@ -69,10 +69,10 @@ module.exports.dislikeCard = (req, res, next) => {
       }
       res.send(card);
     })
-    .catch(err => {
+    .catch((err) => {
       if (err.name === 'CastError') {
-        throw new IncorrectRequestError('Некорректые данные карточки')
+        throw new IncorrectRequestError('Некорректые данные карточки');
       }
     })
-    .catch(next)
+    .catch(next);
 };

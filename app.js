@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -35,7 +36,7 @@ app.use(cors());
 app.post('/signin', validateSignIn, login);
 app.post('/signup', validateSignup, createUser);
 
-app.use(auth)
+app.use(auth);
 
 // Роуты, которым нужна авторизация
 app.use('/users', auth, require('./routes/users'));

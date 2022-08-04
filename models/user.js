@@ -40,8 +40,8 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-/* eslint-disable-next-line func-names */
 // Проверка почты и пароля
+/* eslint-disable-next-line func-names */
 userSchema.statics.findUserByCredentials = function (email, password) {
   // Попытаемся найти пользователя по почте
   return this.findOne({ email })

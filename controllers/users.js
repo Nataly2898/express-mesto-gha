@@ -7,27 +7,30 @@ const NotFoundError = require('../errors/NotFoundError');
 
 // Создание нового пользователя
 module.exports.createUser = (req, res, next) => {
-  const { email, password } = req.body;
+  const {
+    email, password, about, avatar, name,
+  } = req.body;
 
   if (!email || !password) {
     throw new IncorrectRequestError('Неправильный логин или пароль.');
   }
 
-  return User.findOne({ email }).then((user) => {
-    if (user) {
-      throw new ExistingEmailError(`Пользователь с ${email} уже существует.`)
-    }
+  return User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new ExistingEmailError('Пользователь с таким email уже существует.');
+      }
 
-    return bcrypt.hash(password, 10);
-  })
+      return bcrypt.hash(password, 10);
+    })
     .then((hash) => User.create({
       email,
       password: hash,
-      name: req.body.name,
-      about: req.body.about,
-      avatar: req.body.avatar,
+      name,
+      about,
+      avatar,
     }))
-    .then((user) => res.send({
+    .then((user) => res.status(201).send({
       name: user.name,
       about: user.about,
       avatar: user.avatar,
@@ -36,10 +39,10 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new IncorrectRequestError('Ошибка валидации данных')
-      }
+        throw new IncorrectRequestError('Ошибка валидации данных');
+      } else next(err);
     })
-    .catch(next)
+    .catch(next);
 };
 
 // Аутентификация пользователя
@@ -77,7 +80,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     }
 
     // возвращаем пользователя, если он есть
-    return res.status(200).send(user);
+    return res.send(user);
   }).catch(next);
 };
 
