@@ -9,7 +9,7 @@ const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
 const errorHandler = require('./middlewares/errorHandler');
 
-const { validateSignup, validateSignIn } = require('./middlewares/validators');
+const celebrates = require('./middlewares/celebrates');
 const { createUser, login } = require('./controllers/users');
 
 // Слушаем 3000 порт
@@ -34,8 +34,8 @@ app.use(
 
 app.use(cors());
 
-app.post('/signin', validateSignIn, login);
-app.post('/signup', validateSignup, createUser);
+app.post('/signin', celebrates.signIn, login);
+app.post('/signup', celebrates.signUp, createUser);
 
 app.use(auth);
 
