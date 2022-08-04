@@ -35,18 +35,16 @@ app.use(cors());
 app.post('/signin', validateSignIn, login);
 app.post('/signup', validateSignup, createUser);
 
-app.use(auth)
-
-// Роуты, которым нужна авторизация
-app.use('/users', auth, require('./routes/users'));
-app.use('/cards', auth, require('./routes/cards'));
+app.use(auth);
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
 
 // Обработчики ошибок
 app.use(errors()); // обработчик ошибок celebrate
 
 // Централизованный обработчик
-app.use('*', (req, res, next) => {
-  next(new NotFoundError('Страница не найдена'));
+app.use('*', () => {
+  throw new NotFoundError('Страница не найдена');
 });
 
 /* eslint-disable no-console */

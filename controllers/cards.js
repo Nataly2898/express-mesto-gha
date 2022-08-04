@@ -41,6 +41,30 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .catch(next);
 };
+
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Такой карточки не существует!');
+      }
+      if (JSON.stringify(card.owner) !== JSON.stringify(req.user._id)) {
+        throw new ForbiddenError('Нельзя удалить чужую карточку');
+      } else {
+        return Card.deleteOne(card)
+          .then(() => res.send({ message: 'Карточка успешно удалена' }));
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new IncorrectRequestError('Передан некорректный айди');
+      }
+      next(err);
+    })
+    .catch(next);
+};
+
+
 // Поставить лайк
 module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
@@ -56,7 +80,8 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch(next);
 };
-// Удалить лайк
+
+//удалить лайк
 module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
@@ -65,9 +90,15 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        return next(new NotFoundError('Карточка не найдена. Лайк не удалось убрать.'));
+        new NotFoundError('Карточка не найдена. Лайк не удалось убрать.');
       }
-      return res.status(200).send(card);
+      res.send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new IncorrectRequestError('Передан некорректный айди');
+      }
+      next(err);
     })
     .catch(next);
 };

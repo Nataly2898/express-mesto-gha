@@ -7,62 +7,52 @@ const NotFoundError = require('../errors/NotFoundError');
 
 // Создание нового пользователя
 module.exports.createUser = (req, res, next) => {
-  const { email, password } = req.body;
+  const {
+    email, name, about, avatar,
+  } = req.body;
 
-  if (!email || !password) {
-    next(new IncorrectRequestError('Неправильный логин или пароль.'));
-  }
-
-  return User.findOne({ email }).then((user) => {
-    if (user) {
-      next(new ExistingEmailError(`Пользователь с ${email} уже существует.`));
-    }
-
-    return bcrypt.hash(password, 10);
-  })
-    .then((hash) => User.create({
-      email,
-      password: hash,
-      name: req.body.name,
-      about: req.body.about,
-      avatar: req.body.avatar,
-    }))
-    .then((user) => res.send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      _id: user._id,
-      email: user.email,
-    }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new IncorrectRequestError('Ошибка валидации данных'));
-      }
-      return next(err);
+  // хэшируем пароль
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => {
+      User.create({
+        email, password: hash, name, about, avatar,
+      })
+        .then((user) => res.status(201).send(user))
+        // eslint-disable-next-line consistent-return
+        .catch((err) => {
+          if (err.name === 'MongoServerError') {
+            next(new ExistingEmailError('Пользователь с таким email уже существует'));
+          }
+          if (err.name === 'ValidationError') {
+            next(new IncorrectRequestError(`Переданы некорректные данные при создании пользователя`));
+          } else {
+            next(err);
+          }
+        });
     });
 };
 
 // Аутентификация пользователя
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      // проверим существует ли такой email или пароль
-      if (!user || !password) {
-        return next(new IncorrectRequestError('Неверный email или пароль.'));
-      }
 
+  User.findUserByCredentials(email, password)
+    .then((user) => {
       // создадим токен
       const token = jwt.sign(
         { _id: user._id },
         'some-secret-key',
-        {
-          expiresIn: '7d',
-        },
+        { expiresIn: '7d' },
       );
-
       // вернём токен
-      return res.send({ token });
+      res.cookie('jwt', token, {
+        httpOnly: true,
+        sameSite: true,
+      })
+        .send({ token });
+    })
+    .catch((err) => {
+      throw new UnauthorizedError(`Необходима авторизация`);
     })
     .catch(next);
 };
@@ -77,7 +67,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     }
 
     // возвращаем пользователя, если он есть
-    return res.status(200).send(user);
+    return res.send(user);
   }).catch(next);
 };
 
@@ -93,9 +83,15 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return next(new NotFoundError('Пользователь не найден'));
+        throw new NotFoundError('Такого пользователя не существует');
       }
-      return res.status(200).send(user);
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new IncorrectRequestError('Передан некорректный айди');
+      }
+      next(err);
     })
     .catch(next);
 };
@@ -108,7 +104,7 @@ module.exports.updateProfile = (req, res, next) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new IncorrectRequestError('Неверный тип данных.'));
