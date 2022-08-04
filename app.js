@@ -1,5 +1,4 @@
 const express = require('express');
-const errorHandler = require('./middlewares/errorHandler');
 
 const router = express.Router();
 const bodyParser = require('body-parser');
@@ -8,6 +7,7 @@ const { errors } = require('celebrate');
 const cors = require('cors');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
+const errorHandler = require('./middlewares/errorHandler');
 
 const { validateSignup, validateSignIn } = require('./middlewares/validators');
 const { createUser, login } = require('./controllers/users');
