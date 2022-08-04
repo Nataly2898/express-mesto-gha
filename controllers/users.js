@@ -14,9 +14,6 @@ module.exports.createUser = (req, res, next) => {
 
   User.findOne({ email })
     .then((user) => {
-      if (user) {
-        throw new ExistingEmailError('Пользователь с таким email уже существует.');
-      }
       if (!email || !password) {
         throw new IncorrectRequestError('Неправильный логин или пароль.');
       }
@@ -37,6 +34,9 @@ module.exports.createUser = (req, res, next) => {
       email: user.email,
     }))
     .catch((err) => {
+      if (err.name === 'MongoServerError') {
+        next(new ExistingEmailError('Пользователь с таким email уже существует'));
+      }
       if (err.name === 'ValidationError') {
         throw new IncorrectRequestError('Ошибка валидации данных');
       } else next(err);
@@ -49,11 +49,6 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      // проверим существует ли такой email или пароль
-      if (!user || !password) {
-        throw new NotAuthorizationError('Неверный email или пароль.');
-      }
-
       // создадим токен
       const token = jwt.sign(
         { _id: user._id },
@@ -64,7 +59,10 @@ module.exports.login = (req, res, next) => {
       );
 
       // вернём токен
-      return res.send({ token });
+      res.send({ token });
+    })
+    .catch(err => {
+      throw new NotAuthorizationError('Неверный email или пароль.');
     })
     .catch(next);
 };
@@ -98,6 +96,12 @@ module.exports.getUserById = (req, res, next) => {
         throw new NotFoundError('Пользователь не найден');
       } else res.send(user);
     })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new IncorrectRequestError(StatusMessages.INVALID_ID);
+      }
+      next(err);
+    })
     .catch(next);
 };
 
@@ -114,7 +118,7 @@ module.exports.updateProfile = (req, res, next) => {
       if (err.name === 'ValidationError') {
         throw new IncorrectRequestError('Неверный тип данных.');
       }
-      next();
+      next(err);
     })
     .catch(next);
 };
@@ -132,7 +136,7 @@ module.exports.updateAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         throw new IncorrectRequestError('Неверная ссылка');
       }
-      next();
+      next(err);
     })
     .catch(next);
 };
