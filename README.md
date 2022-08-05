@@ -1,5 +1,5 @@
 [![Tests for sprint 13](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-13-sprint.yml) [![Tests for sprint 14](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/${Nataly2898}/${express-mesto-gha}/actions/workflows/tests-14-sprint.yml)
-# Проектная работа № 13: Mesto фронтенд + бэкенд
+# Проектная работа № 13, 14: Mesto фронтенд + бэкенд
 
 ## **Описание проекта:**
 
