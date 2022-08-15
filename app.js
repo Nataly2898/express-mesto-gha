@@ -5,12 +5,14 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
-const cors = require('cors');
+//const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const auth = require('./middlewares/auth');
+const cors = require('./middlewares/cors');
 const NotFoundError = require('./errors/NotFoundError');
 const errorHandler = require('./middlewares/errorHandler');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const celebrates = require('./middlewares/celebrates');
 const { createUser, login } = require('./controllers/users');
@@ -43,8 +45,19 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
+app.use(cors);
 app.use(helmet());
-app.use(cors());
+//app.use(cors());
+
+// Подключаем логгер запросов
+app.use(requestLogger);
+
+// Краш-тест сервера
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 
 app.post('/signin', celebrates.signIn, login);
 app.post('/signup', celebrates.signUp, createUser);
@@ -58,6 +71,9 @@ app.use('/cards', auth, require('./routes/cards'));
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
+
+// Подключаем логгер ошибок
+app.use(errorLogger);
 
 app.use(errors()); // обработчик ошибок celebrate
 app.use(errorHandler);
